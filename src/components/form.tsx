@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
 
 enum Recurrence {
   YEARLY = "Yearly",
@@ -7,7 +9,7 @@ enum Recurrence {
   DAILY = "Daily"
 }
 
-export function Form() {
+export function CustomForm() {
   const [form, setForm] = useState({
     url: '',
     episodes: 1,
@@ -18,7 +20,7 @@ export function Form() {
   function handleUrlBlur(e: React.ChangeEvent<HTMLInputElement>) {
     var url = e.target.value;
     console.log(`URL: ${url}`);
-    if (url.match("^[a-zA-Z ]*$") != null) setForm({ ...form, url: url });
+    if (url.match("^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$") != null) setForm({ ...form, url: url });
     else console.log("");
   }
 
@@ -40,7 +42,7 @@ export function Form() {
   }
 
   return (
-    <form onSubmit={e => {
+    <Form onSubmit={e => {
       e.preventDefault();
       onSubmit();
     }}>
@@ -50,29 +52,32 @@ export function Form() {
       }} />
       <br />
       <br />
-      <label>URL : <input type="text" onBlur={handleUrlBlur} />
-      </label>
-      <br />
-      <br />
-      <label>Number of Episodes : <input type="number" min="1" defaultValue={1} onBlur={handleEpisodesBlur} />
-      </label>
-      <br />
-      <br />
-      <label>Recurrence : <select onBlur={handleRecurrenceBlur}>
-          {Object.keys(Recurrence).map(key => (
-            <option key={key} value={key}>
-              {Recurrence[key as keyof typeof Recurrence]}
-            </option>
-          ))}
-        </select>
-      </label>
-      <br />
-      <br />
-      <label>Frequence : <input type="number" min="1" defaultValue={1} onBlur={handleFrequenceBlur} />
-      </label>
-      <br />
-      <br />
-      <input type="submit" value="Submit" />
-    </form>
+      <Form.Group>
+        <label>URL : <Form.Control type="text" onChange={handleUrlBlur} />
+        </label>
+        <br />
+        <br />
+        <Form.Label>Number of Episodes : <input type="number" min="1" defaultValue={1} onBlur={handleEpisodesBlur} />
+        </Form.Label>
+        <br />
+        <br />
+        <Form.Label>Recurrence : <select onBlur={handleRecurrenceBlur}>
+            {Object.keys(Recurrence).map(key => (
+              <option key={key} value={key}>
+                {Recurrence[key as keyof typeof Recurrence]}
+              </option>
+            ))}
+          </select>
+        </Form.Label>
+        <br />
+        <br />
+        <Form.Label>Frequence : <input type="number" min="1" defaultValue={1} onBlur={handleFrequenceBlur} />
+        </Form.Label>
+        <br />
+        <br />
+        <Button type="submit">
+        </Button>
+      </Form.Group>
+    </Form>
   );
 }
