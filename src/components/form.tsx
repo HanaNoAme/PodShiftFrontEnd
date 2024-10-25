@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 enum Recurrence {
-  YEARLY = "Yearly",
-  MONTHLY = "Monthly",
+  DAILY = "Daily",
   WEEKLY = "Weekly",
-  DAILY = "Daily"
+  MONTHLY = "Monthly",
+  YEARLY = "Yearly"
 }
 
 export function Form() {
@@ -18,23 +18,39 @@ export function Form() {
   function handleUrlBlur(e: React.ChangeEvent<HTMLInputElement>) {
     var url = e.target.value;
     console.log(`URL: ${url}`);
-    if (url.match("^[a-zA-Z ]*$") != null) setForm({ ...form, url: url });
-    else console.log("");
+    if (url.match("^[a-zA-Z ]*$") != null) {
+      setForm({ ...form, url: url })
+    }
+    else {
+      //TODO: validation error
+    }
   }
 
-  function handleEpisodesBlur(e: React.ChangeEvent<HTMLInputElement>) {
-    setForm({ ...form, episodes: parseInt(e.target.value) });
+  function handleEpisodesChange(e: React.ChangeEvent<HTMLInputElement>) {
+    var episodes = parseInt(e.target.value);
+    console.log(`episodes: ${episodes}`);
+    setForm({ ...form, episodes: episodes });
   }
 
-  function handleRecurrenceBlur(e: React.ChangeEvent<HTMLSelectElement>) {
-    setForm({ ...form, recurrence: parseInt(e.target.value) });
+  function handleRecurrenceChange(e: React.ChangeEvent<HTMLSelectElement>) {
+    var recurrence = e.target.value as Recurrence;
+    console.log(`recurrence: ${recurrence}`);
+    setForm({ ...form, recurrence: recurrence });
   }
 
-  function handleFrequenceBlur(e: React.ChangeEvent<HTMLInputElement>) {
-    setForm({ ...form, frequence: parseInt(e.target.value) });
+  function handleFrequenceChange(e: React.ChangeEvent<HTMLInputElement>) {
+    var frequence = parseInt(e.target.value);
+    console.log(`frequence: ${frequence}`);
+    setForm({ ...form, frequence: frequence });
   }
 
   function onSubmit() {
+    console.log(`url: ${form.url}`);
+    console.log(`episodes: ${form.episodes}`);
+    console.log(`recurrence: ${form.recurrence}`);
+    console.log(`frequence: ${form.frequence}`);
+    //TODO : validate url
+
     //TODO : Send request to server
 
   }
@@ -44,9 +60,14 @@ export function Form() {
       e.preventDefault();
       onSubmit();
     }}>
-      {}
       <input type="reset" value="Clear all fields" onClick={() => {
-        alert('Are you sure you want to clear all fields?');
+        if (confirm('Are you sure you want to clear all fields?'))
+          setForm({
+            url: '',
+            episodes: 1,
+            recurrence: Recurrence.DAILY,
+            frequence: 1
+          });
       }} />
       <br />
       <br />
@@ -54,21 +75,23 @@ export function Form() {
       </label>
       <br />
       <br />
-      <label>Number of Episodes : <input type="number" min="1" defaultValue={1} onBlur={handleEpisodesBlur} />
+      <label>Number of Episodes : <input type="number" min="1" defaultValue={1}
+        onChange={handleEpisodesChange} />
       </label>
       <br />
       <br />
-      <label>Recurrence : <select onBlur={handleRecurrenceBlur}>
+      <label>Recurrence : <select onChange={handleRecurrenceChange}>
           {Object.keys(Recurrence).map(key => (
             <option key={key} value={key}>
-              {Recurrence[key as keyof typeof Recurrence]}
+              { Recurrence[key as keyof typeof Recurrence] }
             </option>
           ))}
         </select>
       </label>
       <br />
       <br />
-      <label>Frequence : <input type="number" min="1" defaultValue={1} onBlur={handleFrequenceBlur} />
+      <label>Frequence : <input type="number" min="1" defaultValue={1}
+        onChange={handleFrequenceChange} />
       </label>
       <br />
       <br />
