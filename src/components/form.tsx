@@ -10,6 +10,7 @@ enum Recurrence {
 }
 
 export function CustomForm() {
+  const [isValid, setIsValid] = useState(false);
   const [form, setForm] = useState({
     url: '',
     episodes: 1,
@@ -56,12 +57,11 @@ export function CustomForm() {
   }
 
   return (
-    <Form onSubmit={e => {
+    <Form validated={isValid} onSubmit={e => {
       e.preventDefault();
       onSubmit();
     }}>
-      {}
-      <input type="reset" value="Clear all fields" onClick={() => {
+      <Button type="reset" onClick={() => {
         if (confirm('Are you sure you want to clear all fields?')) {
           setForm({
             url: '',
@@ -70,34 +70,32 @@ export function CustomForm() {
             frequence: 1
           });
         }
-      }} />
+      }}>Clear all fields</Button>
       <br />
       <br />
       <Form.Group>
-        <label>URL : <Form.Control type="text" onChange={handleUrlBlur} />
-        </label>
+        <Form.Label>URL</Form.Label>
+        <input type="text" onBlur={handleUrlBlur} />
         <br />
         <br />
-        <Form.Label>Number of Episodes : <input type="number" min="1" defaultValue={1} onChange={handleEpisodesChange} />
+        <Form.Label>Number of Episodes : <Form.Control type="number" min="1" defaultValue={1} onChange={handleEpisodesChange} />
         </Form.Label>
         <br />
         <br />
-        <Form.Label>Recurrence : <select onChange={handleRecurrenceChange}>
-            {Object.keys(Recurrence).map(key => (
-              <option key={key} value={key}>
-                {Recurrence[key as keyof typeof Recurrence]}
-              </option>
-            ))}
-          </select>
+        <Form.Label>Recurrence : <Form.Select onChange={handleRecurrenceChange}>
+          { Object.keys(Recurrence).map(key => (
+            <option key={key} value={key}>
+              {Recurrence[key as keyof typeof Recurrence]}
+            </option>
+          ))} </Form.Select>
         </Form.Label>
         <br />
         <br />
-        <Form.Label>Frequence : <input type="number" min="1" defaultValue={1} onChange={handleFrequenceChange} />
+        <Form.Label>Frequence : <Form.Control type="number" min="1" defaultValue={1} onChange={handleFrequenceChange} />
         </Form.Label>
         <br />
         <br />
-        <Button type="submit" value="Submit">
-        </Button>
+        <Button type="submit" disabled={!isValid}>Submit</Button>
       </Form.Group>
     </Form>
   );
