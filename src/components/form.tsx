@@ -1,6 +1,4 @@
 import { useState } from 'react';
-import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
 
 enum Recurrence {
   DAILY = "Daily",
@@ -10,7 +8,7 @@ enum Recurrence {
 }
 
 export function CustomForm() {
-  const [isValid, setIsValid] = useState(false);
+  const [isFormValid, setIsFormValid] = useState(false);
   const [form, setForm] = useState({
     url: '',
     episodes: 1,
@@ -18,13 +16,29 @@ export function CustomForm() {
     frequence: 1
   });
 
-  function handleUrlBlur(e: React.ChangeEvent<HTMLInputElement>) {
+  // function validateForm) {
+  //   if (!form.url) {
+  //     setIsFormValid(false);
+  //     console.log("Missing URL");
+  //     return;
+  //   }
+  //   if (form.url.match("https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256} [a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)") != null) {
+  //     setIsFormValid(true);
+  //     console.log("Good URL");
+  //   } else {
+  //     console.log("Bad URL");
+  //     setIsFormValid(false);
+  //     return;
+  //   }
+
+  //   if (!form.episodes || !form.frequence)
+  //     setIsFormValid(false);
+  // }
+
+  function handleUrlBlur(e: React.FocusEvent<HTMLInputElement>) {
     var url = e.target.value;
     console.log(`URL: ${url}`);
-    if (url.match("^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$") != null) setForm({ ...form, url: url });
-    else {
-      //TODO: validation error
-    }
+    setForm({ ...form, url: url });
   }
 
   function handleEpisodesChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -45,23 +59,19 @@ export function CustomForm() {
     setForm({ ...form, frequence: frequence });
   }
 
-  function onSubmit() {
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
     console.log(`url: ${form.url}`);
     console.log(`episodes: ${form.episodes}`);
     console.log(`recurrence: ${form.recurrence}`);
     console.log(`frequence: ${form.frequence}`);
-    //TODO : validate url
-
     //TODO : Send request to server
 
   }
 
   return (
-    <Form validated={isValid} onSubmit={e => {
-      e.preventDefault();
-      onSubmit();
-    }}>
-      <Button type="reset" onClick={() => {
+    <form onSubmit={handleSubmit} noValidate>
+      <button type="reset" onClick={() => {
         if (confirm('Are you sure you want to clear all fields?')) {
           setForm({
             url: '',
@@ -70,33 +80,36 @@ export function CustomForm() {
             frequence: 1
           });
         }
-      }}>Clear all fields</Button>
+      }}>Clear all fields</button>
       <br />
       <br />
-      <Form.Group>
-        <Form.Label>URL</Form.Label>
-        <input type="text" onBlur={handleUrlBlur} />
-        <br />
-        <br />
-        <Form.Label>Number of Episodes : <Form.Control type="number" min="1" defaultValue={1} onChange={handleEpisodesChange} />
-        </Form.Label>
-        <br />
-        <br />
-        <Form.Label>Recurrence : <Form.Select onChange={handleRecurrenceChange}>
-          { Object.keys(Recurrence).map(key => (
+      <div>
+        <label>URL</label>
+        <input type="text" className="form-control" onBlur={handleUrlBlur} required />
+      </div>
+      <br />
+      <div>
+        <label>Number of Episodes</label>
+        <input type="number" min="1" defaultValue={1} onChange={handleEpisodesChange} required />
+      </div>
+      <br />
+      <div>
+        <label>Recurrence</label>
+        <select onChange={handleRecurrenceChange} required>
+          {Object.keys(Recurrence).map(key => (
             <option key={key} value={key}>
               {Recurrence[key as keyof typeof Recurrence]}
             </option>
-          ))} </Form.Select>
-        </Form.Label>
-        <br />
-        <br />
-        <Form.Label>Frequence : <Form.Control type="number" min="1" defaultValue={1} onChange={handleFrequenceChange} />
-        </Form.Label>
-        <br />
-        <br />
-        <Button type="submit" disabled={!isValid}>Submit</Button>
-      </Form.Group>
-    </Form>
+          ))} 
+        </select>
+      </div>
+      <br />
+      <div>
+        <label>Frequence</label>
+        <input type="number" min="1" defaultValue={1} onChange={handleFrequenceChange} required />
+      </div>
+      <br />
+      <button type="submit" /*disabled={!isFormValid}*/ >Submit</button>
+    </form>
   );
 }
