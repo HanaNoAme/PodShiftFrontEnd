@@ -1,19 +1,19 @@
 import { useState } from 'react';
 
 enum Recurrence {
-  DAILY = "Daily",
-  WEEKLY = "Weekly",
-  MONTHLY = "Monthly",
-  YEARLY = "Yearly"
+  Yearly = "year",
+  Monthly = "month",
+  Weekly = "week",
+  Daily = "day"
 }
 
 export function CustomForm() {
   const [isFormValid, setIsFormValid] = useState(false);
   const [form, setForm] = useState({
-    url: '',
+    url: "",
     episodes: 1,
-    recurrence: Recurrence.DAILY,
-    frequence: 1
+    frequence: 1,
+    recurrence: 3,
   });
 
   // function validateForm) {
@@ -47,69 +47,78 @@ export function CustomForm() {
     setForm({ ...form, episodes: episodes });
   }
 
-  function handleRecurrenceChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    var recurrence = e.target.value as Recurrence;
-    console.log(`recurrence: ${recurrence}`);
-    setForm({ ...form, recurrence: recurrence });
-  }
-
   function handleFrequenceChange(e: React.ChangeEvent<HTMLInputElement>) {
     var frequence = parseInt(e.target.value);
     console.log(`frequence: ${frequence}`);
     setForm({ ...form, frequence: frequence });
   }
 
+  function handleRecurrenceChange(e: React.ChangeEvent<HTMLSelectElement>) {
+    var index = Object.keys(Recurrence).indexOf(e.target.value);
+    console.log(`recurrence: ${index}`);
+    setForm({ ...form, recurrence: index });
+  }
+
+  function handleClear() { 
+    if (confirm("Are you sure you want to clear all fields?")) {
+      setForm({
+        url: "",
+        episodes: 1,
+        frequence: 1,
+        recurrence: 3,
+      });
+    }
+  }
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     console.log(`url: ${form.url}`);
     console.log(`episodes: ${form.episodes}`);
-    console.log(`recurrence: ${form.recurrence}`);
     console.log(`frequence: ${form.frequence}`);
+    console.log(`recurrence: ${form.recurrence}`);
     //TODO : Send request to server
 
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate>
-      <button type="reset" onClick={() => {
-        if (confirm('Are you sure you want to clear all fields?')) {
-          setForm({
-            url: '',
-            episodes: 1,
-            recurrence: Recurrence.DAILY,
-            frequence: 1
-          });
-        }
-      }}>Clear all fields</button>
-      <br />
-      <br />
+    <form className="text-start translate-middle-x start-50 position-relative w-75 my-5" onSubmit={handleSubmit} noValidate>
       <div>
-        <label>URL</label>
+        <label className="form-label">URL</label>
         <input type="text" className="form-control" onBlur={handleUrlBlur} required />
       </div>
       <br />
-      <div>
-        <label>Number of Episodes</label>
-        <input type="number" min="1" defaultValue={1} onChange={handleEpisodesChange} required />
+      <div className="text-start row">
+        <div className="col">
+          <label className="form-label">Number of Episodes</label>
+          <input type="number" className="form-control" min="1" defaultValue={1}
+            onChange={handleEpisodesChange} required />
+        </div>
+        <div className="col align-self-end">
+          <label className="form-label">Frequence</label>
+          <input type="number" className="form-control" min="1" defaultValue={1}
+            onChange={handleFrequenceChange} required />
+        </div>
+        <div className="col align-self-end">
+          <label className="form-label">Recurrence</label>
+          <select className="form-control" onChange={handleRecurrenceChange} required>
+            {Object.keys(Recurrence).reverse().map(key => (
+              <option key={key} value={key}>
+                {key}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
       <br />
-      <div>
-        <label>Recurrence</label>
-        <select onChange={handleRecurrenceChange} required>
-          {Object.keys(Recurrence).map(key => (
-            <option key={key} value={key}>
-              {Recurrence[key as keyof typeof Recurrence]}
-            </option>
-          ))} 
-        </select>
+      <p>{form.episodes} episode{form.episodes > 1 ? "s" : ""} every {form.frequence > 1 ? `${form.frequence} ` : ""}{Object.values(Recurrence)[form.recurrence]}{form.frequence > 1 ? "s" : ""}</p>
+      <div className="d-flex justify-content-between">
+        <button type="submit" className="btn btn-primary" /*disabled={!isFormValid}*/ >
+          Submit
+        </button>
+        <button type="reset" className="btn btn-secondary" onClick={handleClear}>
+          Reset all fields
+        </button>
       </div>
-      <br />
-      <div>
-        <label>Frequence</label>
-        <input type="number" min="1" defaultValue={1} onChange={handleFrequenceChange} required />
-      </div>
-      <br />
-      <button type="submit" /*disabled={!isFormValid}*/ >Submit</button>
     </form>
   );
 }
