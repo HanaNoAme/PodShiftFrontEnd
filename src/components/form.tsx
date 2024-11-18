@@ -1,8 +1,8 @@
 import { useState } from "react";
-import validator from "validator";
-import { Result } from './result'
+import { Input, Recurrence } from "./input";
+import { Result } from './result';
 
-interface FormState {
+export interface FormState {
   url: string;
   episodes: number;
   frequence: number;
@@ -16,13 +16,6 @@ interface FormValidation {
   recurrence: boolean;
 }
 
-enum Recurrence {
-  Yearly = "year",
-  Monthly = "month",
-  Weekly = "week",
-  Daily = "day",
-}
-
 export function Form() {
   const INITIAL_FORM_STATE: FormState = {
     url: "",
@@ -30,15 +23,7 @@ export function Form() {
     frequence: 1,
     recurrence: 3
   };
-  const INITIAL_VALIDATION_STATE: FormValidation = {
-    url: false,
-    episodes: true,
-    frequence: true,
-    recurrence: true
-  };
   const [form, setForm] = useState(INITIAL_FORM_STATE)
-  const [isInputValid, setIsInputValid] = useState(INITIAL_VALIDATION_STATE);
-  const [hasSelectedUrlField, setHasSelectedUrlField] = useState(false);
   const isFormValid = Object.values(isInputValid).every(Boolean);
 
   function handleUrlBlur(e: React.FocusEvent<HTMLInputElement>) {
@@ -80,12 +65,6 @@ export function Form() {
       setIsInputValid({ ...isInputValid, recurrence: true });
     } else
       setIsInputValid({ ...isInputValid, recurrence: false });
-  }
-
-  function validateInput(value: string | number): boolean {
-    if (typeof value === "string") return validator.isURL(value);
-    if (typeof value === "number") return value > 0;
-    return false;
   }
 
   function handleClear() {
@@ -137,8 +116,26 @@ export function Form() {
             </div>
           }
         </div>
+        <Input
+          name="url"
+          display="URL"
+          type="text"
+          value={form.url}
+          col={false}
+          setInputValue={(value) =>
+            setForm((prev) => ({ ...prev, url: value }))}
+        ></Input>
         <br />
         <div className="text-start row">
+          <Input
+            name="episodes"
+            display="Number of Episodes"
+            type="number"
+            value={form.episodes}
+            col={true}
+            setInputValue={(value) =>
+              setForm((prev) => ({ ...prev, episodes: value }))}
+          ></Input>
           <div className="col">
             <label htmlFor="episodes" className="form-label">Number of Episodes</label>
             <input id="episodes" type="number" className="form-control" min="1" defaultValue={1} onChange={handleEpisodesChange} required />
