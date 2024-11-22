@@ -2,75 +2,44 @@ import { useState } from "react";
 import { Input, Recurrence } from "./input";
 import { Result } from './result';
 
-export interface FormState {
-  url: string;
-  episodes: number;
-  frequence: number;
-  recurrence: number;
+export interface Field {
+  value: string | number
+  isValid: boolean
 }
 
-interface FormValidation {
-  url: boolean;
-  episodes: boolean;
-  frequence: boolean;
-  recurrence: boolean;
+export interface FormState {
+  url: Field
+  episodes: Field
+  frequence: Field
+  recurrence: Field
 }
+
+const initialForm: FormState = {
+  url: {
+    value: "",
+    isValid: false,
+  },
+  episodes: {
+    value: 1,
+    isValid: true,
+  },
+  frequence: {
+    value: 1,
+    isValid: true,
+  },
+  recurrence: {
+    value: 3,
+    isValid: true,
+  },
+};
 
 export function Form() {
-  const INITIAL_FORM_STATE: FormState = {
-    url: "",
-    episodes: 1,
-    frequence: 1,
-    recurrence: 3
-  };
-  const [form, setForm] = useState(INITIAL_FORM_STATE)
-  const isFormValid = Object.values(isInputValid).every(Boolean);
-
-  function handleUrlBlur(e: React.FocusEvent<HTMLInputElement>) {
-    if (!hasSelectedUrlField) setHasSelectedUrlField(true);
-    var url = e.target.value;
-
-    if (validateInput(url)) {
-      setForm({ ...form, url: url });
-      setIsInputValid({ ...isInputValid, url: true });
-    } else
-      setIsInputValid({ ...isInputValid, url: false });
-  }
-
-  function handleEpisodesChange(e: React.ChangeEvent<HTMLInputElement>) {
-    var episodes = parseInt(e.target.value);
-
-    if (validateInput(episodes)) {
-      setForm({ ...form, episodes: episodes });
-      setIsInputValid({ ...isInputValid, episodes: true });
-    } else
-      setIsInputValid({ ...isInputValid, episodes: false });
-  }
-
-  function handleFrequenceChange(e: React.ChangeEvent<HTMLInputElement>) {
-    var frequence = parseInt(e.target.value);
-
-    if (validateInput(frequence)) {
-      setForm({ ...form, frequence: frequence });
-      setIsInputValid({ ...isInputValid, frequence: true });
-    } else
-      setIsInputValid({ ...isInputValid, frequence: false });
-  }
-
-  function handleRecurrenceChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    var recurrence = Object.keys(Recurrence).indexOf(e.target.value);
-
-    if (validateInput(recurrence + 1)) { // because index starts at 0
-      setForm({ ...form, recurrence: recurrence });
-      setIsInputValid({ ...isInputValid, recurrence: true });
-    } else
-      setIsInputValid({ ...isInputValid, recurrence: false });
-  }
+  const [form, setForm] = useState(initialForm)
+  const isFormValid = Object.values(form).every((field) => field.isValid);
 
   function handleClear() {
     if (!confirm("Are you sure you want to clear all fields?")) return;
-    setForm(INITIAL_FORM_STATE);
-    setIsInputValid(INITIAL_VALIDATION_STATE);
+    setForm(initialForm);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -107,23 +76,14 @@ export function Form() {
   return (
     <>
       <form className="text-start translate-middle-x start-50 position-relative w-75 my-5" onSubmit={handleSubmit} noValidate>
-        <div>
-          <label htmlFor="url" className="form-label">URL</label>
-          <input id="url" type="text" className="form-control" onBlur={handleUrlBlur} required />
-          {!isInputValid.url && hasSelectedUrlField &&
-            <div className="text-danger">
-              Invalid URL
-            </div>
-          }
-        </div>
         <Input
           name="url"
           display="URL"
           type="text"
-          value={form.url}
-          col={false}
-          setInputValue={(value) =>
-            setForm((prev) => ({ ...prev, url: value }))}
+          field={form.url}
+          setInputValue={(value, isValid) => 
+            setForm((prev) => ({ ...prev, url: { value, isValid } }))
+          }
         ></Input>
         <br />
         <div className="text-start row">
@@ -131,8 +91,7 @@ export function Form() {
             name="episodes"
             display="Number of Episodes"
             type="number"
-            value={form.episodes}
-            col={true}
+            field={form.episodes}
             setInputValue={(value) =>
               setForm((prev) => ({ ...prev, episodes: value }))}
           ></Input>
