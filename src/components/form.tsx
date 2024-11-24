@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Input, Recurrence } from "./input";
+import { Input } from "./input";
 import { Result } from './result';
 
 export interface Field {
@@ -7,7 +7,7 @@ export interface Field {
   isValid: boolean
 }
 
-export interface FormState {
+interface FormState {
   url: Field
   episodes: Field
   frequence: Field
@@ -33,6 +33,13 @@ const initialForm: FormState = {
   },
 };
 
+export enum Recurrence {
+  Yearly = "year",
+  Monthly = "month",
+  Weekly = "week",
+  Daily = "day",
+}
+
 export function Form() {
   const [form, setForm] = useState(initialForm)
   const isFormValid = Object.values(form).every((field) => field.isValid);
@@ -44,13 +51,12 @@ export function Form() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    console.log(form);
 
     if (!isFormValid) {
       alert("Form is invalid. Please check your inputs.");
       return;
     }
-
-    console.log(form);
 
     try {
       const response = await fetch('http://www.podshift.net:8080/PodShift', {
@@ -58,15 +64,17 @@ export function Form() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(form)
+        body: JSON.stringify(Object.fromEntries(
+          Object.entries(form).map(([key, value]) => [key, value.value])
+        ))
       });
 
       if (response.ok) {
         const data = await response.json();
         console.log(data);
-        alert('Schedule created successfully!');
+        alert('Success!');
       } else {
-        throw new Error('Failed to create schedule');
+        throw new Error('Failed');
       }
     } catch (error: any) {
       alert('Error creating schedule: ' + error.message);
@@ -82,9 +90,7 @@ export function Form() {
           type="text"
           field={form.url}
           setInputValue={(value, isValid) => 
-            setForm((prev) => ({ ...prev, url: { value, isValid } }))
-          }
-        ></Input>
+            setForm((prev) => ({ ...prev, url: { value, isValid } }))} />
         <br />
         <div className="text-start row">
           <Input
@@ -92,30 +98,25 @@ export function Form() {
             display="Number of Episodes"
             type="number"
             field={form.episodes}
-            setInputValue={(value) =>
-              setForm((prev) => ({ ...prev, episodes: value }))}
-          ></Input>
-          <div className="col">
-            <label htmlFor="episodes" className="form-label">Number of Episodes</label>
-            <input id="episodes" type="number" className="form-control" min="1" defaultValue={1} onChange={handleEpisodesChange} required />
-          </div>
-          <div className="col align-self-end">
-            <label htmlFor="frequence" className="form-label">Frequence</label>
-            <input id="frequence" type="number" className="form-control" min="1" defaultValue={1} onChange={handleFrequenceChange} required />
-          </div>
-          <div className="col align-self-end">
-            <label htmlFor="recurrence" className="form-label">Recurrence</label>
-            <select id="recurrence" className="form-control" onChange={handleRecurrenceChange} required>
-              {Object.keys(Recurrence).reverse().map(key => (
-                <option key={key} value={key}>
-                  {key}
-                </option>
-              ))}
-            </select>
-          </div>
+            setInputValue={(value, isValid) =>
+              setForm((prev) => ({ ...prev, episodes: { value, isValid } }))} />
+          <Input
+            name="frequence"
+            display="Frequence"
+            type="number"
+            field={form.frequence}
+            setInputValue={(value, isValid) =>
+              setForm((prev) => ({ ...prev, frequence: { value, isValid } }))} />
+          <Input
+            name="recurrence"
+            display="Recurrence"
+            type="select"
+            field={form.recurrence}
+            setInputValue={(value, isValid) =>
+              setForm((prev) => ({ ...prev, recurrence: { value, isValid } }))} />
         </div>
         <br />
-        <p>{form.episodes} episode{form.episodes > 1 ? "s" : ""} every {form.frequence > 1 ? `${form.frequence} ` : ""}{Object.values(Recurrence)[form.recurrence]}{form.frequence > 1 ? "s" : ""}</p>
+        <p>{form.episodes.value} episode{Number(form.episodes.value) > 1 ? "s" : ""} every {Number(form.frequence.value) > 1 ? `${form.frequence.value} ` : ""}{Object.values(Recurrence)[Number(form.recurrence.value)]}{Number(form.frequence.value) > 1 ? "s" : ""}</p>
         <div className="d-flex justify-content-between">
           <button type="submit" className="btn btn-primary" disabled={!isFormValid} >
             Submit
