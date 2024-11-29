@@ -1,10 +1,20 @@
 import { useState } from "react";
 import { Input } from "./input";
-import { Result } from './result';
 
 export interface Field {
   value: string | number
   isValid: boolean
+}
+
+interface Response {
+  custom_url: string
+  UUID: string
+  title: string
+  frequence: number
+  interval: number
+  amount: number
+  url: string
+  detail: string
 }
 
 interface FormState {
@@ -38,7 +48,7 @@ export enum Recurrence {
   Monthly = "month",
   Weekly = "week",
   Daily = "day",
-}
+    }
 
 export function Form() {
   const [form, setForm] = useState(initialForm)
@@ -69,15 +79,14 @@ export function Form() {
         ))
       });
 
+      const data: Response = await response.json();
       if (response.ok) {
-        const data = await response.json();
-        console.log(data);
         alert('Success!');
       } else {
-        throw new Error('Failed');
+        throw new Error(data.detail);
       }
     } catch (error: any) {
-      alert('Error creating schedule: ' + error.message);
+      alert('Error creating feed: ' + error.message);
     }
   }
 
@@ -126,7 +135,6 @@ export function Form() {
           </button>
         </div>
       </form>
-      <Result></Result>
     </>
   );
 }
