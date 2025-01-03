@@ -1,6 +1,7 @@
 import validator from "validator";
 import { useState } from "react";
-import { Field, Recurrence } from "./form";
+import { Field } from "../interfaces/field";
+import { Recurrence } from "../classes/recurrence";
 
 interface Props {
   name: string

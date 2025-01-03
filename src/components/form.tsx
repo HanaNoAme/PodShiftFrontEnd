@@ -1,29 +1,10 @@
 import { useState } from "react";
 import { Input } from "./input";
+import { FormState } from "../interfaces/formState";
+import { Recurrence } from "../classes/recurrence";
+import { Response } from "../interfaces/response";
 
-export interface Field {
-  value: string | number
-  isValid: boolean
-}
-
-interface Response {
-  custom_url: string
-  UUID: string
-  title: string
-  frequence: number
-  interval: number
-  amount: number
-  url: string
-  detail: string
-}
-
-interface FormState {
-  url: Field
-  episodes: Field
-  frequence: Field
-  recurrence: Field
-}
-
+const apiUrl = "http://www.podshift.net:8080/PodShift";
 const initialForm: FormState = {
   url: {
     value: "",
@@ -43,13 +24,6 @@ const initialForm: FormState = {
   },
 };
 
-export enum Recurrence {
-  Yearly = "year",
-  Monthly = "month",
-  Weekly = "week",
-  Daily = "day",
-    }
-
 export function Form() {
   const [form, setForm] = useState(initialForm)
   const isFormValid = Object.values(form).every((field) => field.isValid);
@@ -68,11 +42,13 @@ export function Form() {
       return;
     }
 
+    //TODO: Add loading state
+
     try {
-      const response = await fetch('http://www.podshift.net:8080/PodShift', {
-        method: 'POST',
+      const response = await fetch(apiUrl, {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(Object.fromEntries(
           Object.entries(form).map(([key, value]) => [key, value.value])
@@ -81,12 +57,12 @@ export function Form() {
 
       const data: Response = await response.json();
       if (response.ok) {
-        alert('Success!');
+        alert("Success!");
       } else {
         throw new Error(data.detail);
       }
     } catch (error: any) {
-      alert('Error creating feed: ' + error.message);
+      alert("Error creating feed: " + error.message);
     }
   }
 
