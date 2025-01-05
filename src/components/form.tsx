@@ -3,6 +3,9 @@ import { Input } from "./input";
 import { FormState } from "../interfaces/formState";
 import { Recurrence } from "../classes/recurrence";
 import { Response } from "../interfaces/response";
+import { CSSProperties } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faX } from '@fortawesome/free-solid-svg-icons';
 
 const apiUrl = "http://www.podshift.net:8080/PodShift";
 const initialForm: FormState = {
@@ -24,9 +27,25 @@ const initialForm: FormState = {
   },
 };
 
-export function Form() {
+export function Form({ }: { handleClose: () => void }) {
   const [form, setForm] = useState(initialForm)
   const isFormValid = Object.values(form).every((field) => field.isValid);
+  const modalStyles: CSSProperties = {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    background: "rgba(0, 0, 0, 0.6)",
+  };
+  const formStyles: CSSProperties = {
+    padding: "20px",
+    top: "auto",
+    left: "50%",
+    width: "80%",
+    height: "auto",
+    background: "white",
+  };
 
   function handleClear() {
     if (!confirm("Are you sure you want to clear all fields?")) return;
@@ -67,8 +86,11 @@ export function Form() {
   }
 
   return (
-    <>
-      <form className="text-start translate-middle-x start-50 position-relative w-75 my-5" onSubmit={handleSubmit} noValidate>
+    <div style={modalStyles}>
+      <form className={"position-fixed text-start translate-middle-x start-50 position-relative w-75 my-5"} onSubmit={handleSubmit} noValidate style={formStyles}>
+        <button type="button" className="btn btn-secondary float-end mb-3">
+          <FontAwesomeIcon icon={faX} />
+        </button>
         <Input
           name="url"
           display="URL"
@@ -111,6 +133,6 @@ export function Form() {
           </button>
         </div>
       </form>
-    </>
+    </div>
   );
 }

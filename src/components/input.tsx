@@ -12,7 +12,7 @@ interface Props {
 }
 
 export function Input(props: Props) {
-  var [isUrlTouched, setIsUrlTouched] = useState(false)
+  const [isUrlTouched, setIsUrlTouched] = useState(false)
 
   function handleInputBlur(e: React.FocusEvent<HTMLInputElement>) {
     if (props.name == "url" && !isUrlTouched) setIsUrlTouched(true);

@@ -1,12 +1,12 @@
 import './App.css'
-import { Form } from './components/form'
+import { PodcastList } from './components/podcastList'
 
 export default function App() {
   return (
     <>
       <h1>PodShift</h1>
       <p>Create a podcast feed that will redistribute the backlog of an existing podcast at a custom schedule</p>
-      <Form></Form>
+      <PodcastList></PodcastList>
       <footer>
         <small>Website made by @<a href="https://github.com/HanaNoAme">HanaNoAme</a></small>
         <br />
