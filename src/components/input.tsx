@@ -63,7 +63,7 @@ export function Input(props: Props) {
   };
 
   return (
-    <div className={props.type == "text" ? "" : "col align-self-end"}>
+    <div className="align-self-end col">
       <label htmlFor={props.name} className="form-label">{props.display}</label>
       {renderInput()}
       {!props.field.isValid && isUrlTouched &&

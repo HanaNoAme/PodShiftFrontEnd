@@ -4,8 +4,6 @@ import { FormState } from "../interfaces/formState";
 import { Recurrence } from "../classes/recurrence";
 import { Response } from "../interfaces/response";
 import { CSSProperties } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faX } from '@fortawesome/free-solid-svg-icons';
 
 const apiUrl = "http://www.podshift.net:8080/PodShift";
 const initialForm: FormState = {
@@ -27,7 +25,11 @@ const initialForm: FormState = {
   },
 };
 
-export function Form({ }: { handleClose: () => void }) {
+interface Props {
+  handleClose: () => void
+}
+
+export function Form(props: Props) {
   const [form, setForm] = useState(initialForm)
   const isFormValid = Object.values(form).every((field) => field.isValid);
   const modalStyles: CSSProperties = {
@@ -39,10 +41,15 @@ export function Form({ }: { handleClose: () => void }) {
     background: "rgba(0, 0, 0, 0.6)",
   };
   const formStyles: CSSProperties = {
-    top: "auto",
+    position: "fixed",
+    transform: "translateX(-50%)",
+    backgroundColor: "white",
+    padding: "40px",
+    top: "20%",
     left: "50%",
     width: "80%",
     height: "auto",
+    borderRadius: "10px",
   };
 
   function handleClear() {
@@ -85,17 +92,19 @@ export function Form({ }: { handleClose: () => void }) {
 
   return (
     <div style={modalStyles}>
-      <form className={"position-fixed text-start translate-middle-x start-50 position-relative w-75 my-5 p-5 bg-white"} onSubmit={handleSubmit} noValidate style={formStyles}>
-        <button type="button" className="btn btn-secondary float-end mb-3">
-          <FontAwesomeIcon icon={faX} />
+      <form onSubmit={handleSubmit} noValidate style={formStyles}>
+        <button type="button" className="btn btn-secondary position-absolute top-0 end-0 m-4" onClick={props.handleClose}>
+          Cancel
         </button>
-        <Input
-          name="url"
-          display="URL"
-          type="text"
-          field={form.url}
-          setInputValue={(value, isValid) => 
-            setForm((prev) => ({ ...prev, url: { value, isValid } }))} />
+        <div className="text-start row">
+          <Input
+            name="url"
+            display="URL"
+            type="text"
+            field={form.url}
+            setInputValue={(value, isValid) => 
+              setForm((prev) => ({ ...prev, url: { value, isValid } }))} />
+        </div>
         <br />
         <div className="text-start row">
           <Input
