@@ -39,12 +39,10 @@ export function Form({ }: { handleClose: () => void }) {
     background: "rgba(0, 0, 0, 0.6)",
   };
   const formStyles: CSSProperties = {
-    padding: "20px",
     top: "auto",
     left: "50%",
     width: "80%",
     height: "auto",
-    background: "white",
   };
 
   function handleClear() {
@@ -87,7 +85,7 @@ export function Form({ }: { handleClose: () => void }) {
 
   return (
     <div style={modalStyles}>
-      <form className={"position-fixed text-start translate-middle-x start-50 position-relative w-75 my-5"} onSubmit={handleSubmit} noValidate style={formStyles}>
+      <form className={"position-fixed text-start translate-middle-x start-50 position-relative w-75 my-5 p-5 bg-white"} onSubmit={handleSubmit} noValidate style={formStyles}>
         <button type="button" className="btn btn-secondary float-end mb-3">
           <FontAwesomeIcon icon={faX} />
         </button>
