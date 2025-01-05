@@ -14,14 +14,13 @@ export function PodcastList() {
 
   return (
     <>
-      {!isVisible && <button type="button" onClick={toggleForm}>
+      {!isVisible && <button className="btn btn-primary" onClick={toggleForm}>
         Add new Podcast
       </button>}
       {isVisible && <Form handleClose={toggleForm} />}
       <div>
         {podcastList.map((podcast: PodcastModel) => (
-          <Podcast
-            title={podcast.url} />
+          <Podcast {...podcast} />
         ))}
       </div>
     </>
