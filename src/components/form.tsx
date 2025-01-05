@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, CSSProperties } from "react";
 import { Input } from "./input";
-import { FormState } from "../interfaces/formState";
-import { Recurrence } from "../classes/recurrence";
-import { Response } from "../interfaces/response";
-import { CSSProperties } from 'react';
+import { Recurrence } from "../models/recurrence";
+import { FormState } from "../models/formState";
+import { Response } from "../models/response";
+import { PodcastModel } from "../models/podcastModel";
 
 const apiUrl = "http://www.podshift.net:8080/PodShift";
 const initialForm: FormState = {
@@ -32,6 +32,7 @@ interface Props {
 export function Form(props: Props) {
   const [form, setForm] = useState(initialForm)
   const isFormValid = Object.values(form).every((field) => field.isValid);
+
   const modalStyles: CSSProperties = {
     position: "fixed",
     top: 0,
@@ -59,7 +60,6 @@ export function Form(props: Props) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    console.log(form);
 
     if (!isFormValid) {
       alert("Form is invalid. Please check your inputs.");
@@ -80,11 +80,29 @@ export function Form(props: Props) {
       });
 
       const data: Response = await response.json();
+
       if (response.ok) {
+        const storedPodcastList = localStorage.getItem("podcastList");
+        var podcastList = storedPodcastList ? JSON.parse(storedPodcastList) : [];
+
+        const podcast: PodcastModel = {
+          UUID: data.UUID,
+          title: data.title,
+          frequence: data.frequence,
+          interval: data.interval,
+          amount: data.amount,
+          url: data.url
+        };
+        console.log(podcast);
+        podcastList.push(podcast);
+        localStorage.setItem("podcastList", JSON.stringify(podcastList));
+
         alert("Success!");
-      } else {
-        throw new Error(data.detail);
+
+        //close modal
+
       }
+      else throw new Error(data.detail);
     } catch (error: any) {
       alert("Error creating feed: " + error.message);
     }

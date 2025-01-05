@@ -1,8 +1,12 @@
 import { useState } from "react"; 
 import { Form } from "./form";
+import { PodcastModel } from "../models/podcastModel";
+import { Podcast } from "./podcast";
 
 export function PodcastList() {
   const [isVisible, setIsVisible] = useState(false)
+  const storedPodcastList = localStorage.getItem("podcastList");
+  var podcastList = storedPodcastList ? JSON.parse(storedPodcastList) : [];
 
   function toggleForm() {
     setIsVisible(!isVisible);
@@ -10,12 +14,16 @@ export function PodcastList() {
 
   return (
     <>
+      {!isVisible && <button type="button" onClick={toggleForm}>
+        Add new Podcast
+      </button>}
+      {isVisible && <Form handleClose={toggleForm} />}
       <div>
-        {!isVisible && <button type="button" onClick={toggleForm}>
-          Open
-        </button>}
-        {isVisible && <Form handleClose={toggleForm} />}
-      </div> 
+        {podcastList.map((podcast: PodcastModel) => (
+          <Podcast
+            title={podcast.url} />
+        ))}
+      </div>
     </>
   );
 }

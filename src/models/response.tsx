@@ -1,4 +1,4 @@
-export interface Response {
+export type Response = {
   custom_url: string
   UUID: string
   title: string
